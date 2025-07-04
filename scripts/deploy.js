@@ -1,17 +1,13 @@
-import { ethers } from "hardhat";
+const fs = require("fs");
+const path = require("path");
 
 async function main() {
   console.log("🚀 Starting Stake2Take Simplified Deployment...\n");
 
-  // Get the deployer account
-  const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with account:", deployer.address);
-  console.log("Account balance:", (await deployer.provider.getBalance(deployer.address)).toString());
-
   // USDC address for different networks (Base Sepolia for testing)
   const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e"; // Base Sepolia USDC
 
-  console.log("\n📋 Contract Addresses Configuration:");
+  console.log("📋 Contract Addresses Configuration:");
   console.log("USDC Address:", USDC_ADDRESS);
 
   // For demo purposes, use mock addresses
@@ -32,8 +28,8 @@ async function main() {
   // Summary of deployed contracts
   console.log("📋 DEPLOYMENT SUMMARY:");
   console.log("═══════════════════════════════════════════════════════════");
-  console.log("Network:", await ethers.provider.getNetwork());
-  console.log("Deployer:", deployer.address);
+  console.log("Network: base-sepolia");
+  console.log("Chain ID: 84532");
   console.log("═══════════════════════════════════════════════════════════");
   console.log("VaultManager:", mockContracts.VaultManager);
   console.log("AutopilotManager:", mockContracts.AutopilotManager);
@@ -90,13 +86,9 @@ async function main() {
     },
     usdc: USDC_ADDRESS,
     deployedAt: new Date().toISOString(),
-    deployer: deployer.address
+    deployer: "0xDemo123456789012345678901234567890123456"
   };
 
-  // Write contracts config to file
-  const fs = require("fs");
-  const path = require("path");
-  
   // Ensure config directory exists
   const configDir = path.join(__dirname, "..", "config");
   if (!fs.existsSync(configDir)) {
@@ -130,15 +122,20 @@ NEXT_PUBLIC_USDC_ADDRESS=${USDC_ADDRESS}
 # Default values for demo
 NEXT_PUBLIC_DEFAULT_TARGET_BALANCE=300
 NEXT_PUBLIC_DEFAULT_STAKE_AMOUNT=1000
+
+# Mock data for demo
+NEXT_PUBLIC_ENABLE_MOCK_DATA=true
 `;
 
   fs.writeFileSync(path.join(__dirname, "..", ".env.local"), envContent);
   console.log("✅ Environment variables created in .env.local");
+  
+  console.log("\n🎉 Setup Complete! Ready to start development server.");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("❌ Deployment failed:", error);
+    console.error("❌ Setup failed:", error);
     process.exit(1);
-  });
+  }); 

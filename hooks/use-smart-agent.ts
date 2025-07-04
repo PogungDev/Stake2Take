@@ -124,8 +124,29 @@ export function useSmartAgent() {
 
   const simulateAPYChange = useCallback(() => {
     const delta = (Math.random() * 4 - 2).toFixed(1) // -2% to +2%
-    const direction = Number.parseFloat(delta) > 0 ? "Compound → Aave" : "Aave → Compound"
-    addLog("vault", `Rebalanced: ${direction} (APY delta: ${Number.parseFloat(delta) > 0 ? "+" : ""}${delta}%)`, "🔁")
+    const deltaNum = Number.parseFloat(delta)
+    
+    // Only rebalance if delta is significant (> 1.5%)
+    if (Math.abs(deltaNum) > 1.5) {
+      const direction = deltaNum > 0 ? "Compound → Aave" : "Aave → Compound"
+      
+      // Update allocation based on APY change
+      setAgentState((prev) => {
+        const newAaveAllocation = deltaNum > 0 ? 
+          Math.min(100, prev.vaultAave + 20) :  // Increase Aave if it's better
+          Math.max(0, prev.vaultAave - 20)      // Decrease Aave if Compound is better
+        
+        return {
+          ...prev,
+          vaultAave: newAaveAllocation,
+          vaultCompound: 100 - newAaveAllocation
+        }
+      })
+      
+      addLog("vault", `Rebalanced: ${direction} (APY delta: ${deltaNum > 0 ? "+" : ""}${delta}%)`, "🔁")
+    } else {
+      addLog("vault", `APY checked: ${deltaNum > 0 ? "+" : ""}${delta}% difference (no rebalance needed)`, "👀")
+    }
   }, [addLog])
 
   const simulateCashback = useCallback(

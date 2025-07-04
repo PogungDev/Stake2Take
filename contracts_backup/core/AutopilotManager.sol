@@ -15,6 +15,7 @@ contract AutopilotManager is Ownable {
     event AutopilotCreated(address indexed walletAddress, string strategy);
     event ConfigUpdated(address indexed walletAddress, string newConfig);
     event RebalanceTriggered(address indexed walletAddress, uint256 timestamp);
+    event AutoCompoundExecuted(address indexed user, uint256 amount, string protocol);
 
     /**
      * @dev Creates or updates an autopilot configuration for a given wallet address.
@@ -60,5 +61,17 @@ contract AutopilotManager is Ownable {
         require(bytes(autopilotConfigs[_walletAddress]).length > 0, "Autopilot not found for this address");
         // Simulate rebalance logic here or call another contract
         emit RebalanceTriggered(_walletAddress, block.timestamp);
+    }
+
+    /**
+     * @dev Called by CompoundAgent to notify of auto compound execution
+     * @param user The user address for whom compound was executed
+     * @param rewardAmount The amount of rewards compounded
+     * @param protocol The protocol where compound happened
+     */
+    function executeAutoCompound(address user, uint256 rewardAmount, string memory protocol) external {
+        // In a real system, you'd have authorization checks here
+        // For demo purposes, we'll allow any caller
+        emit AutoCompoundExecuted(user, rewardAmount, protocol);
     }
 }

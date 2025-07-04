@@ -7,9 +7,7 @@ const nextConfig = {
     }
     return config
   },
-  experimental: {
-    serverComponentsExternalPackages: ['eventemitter2']
-  },
+  serverExternalPackages: ['eventemitter2'],
   eslint: {
     ignoreDuringBuilds: true,
   },
